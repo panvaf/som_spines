@@ -1,4 +1,4 @@
-function [real_trans, pseudofreq, scales] = wavtrans(record, chan, t, fsample, rowsPerOct, freqSpan, padmode, wavelet, plottype)
+function [real_trans, pseudofreq, scales] = wavtrans(record, t, fsample, rowsPerOct, freqSpan, padmode, wavelet, plottype)
 % Calculate and show the wavelet transform for a single eeg channel
 %
 % eeg: 1x[time] Vector of eeg time series
@@ -13,13 +13,13 @@ scales= helperCWTTimeFreqVector(freqSpan(1),freqSpan(2),centfrq(wavelet),1/fsamp
 pseudofreq= mean([freqSpan(1)*scales(end),freqSpan(2)*scales(1)])./scales;
 
 % Transform
-trans= cwtft({record(chan,:),1/fsample},'wavelet',wavelet,'scales',scales,'padmode',padmode);
+trans= cwtft({record,1/fsample},'wavelet',wavelet,'scales',scales,'padmode',padmode);
 real_trans= real(trans.cfs);
 
 % Plot
 figure
-wscalogram(plottype,flip(real_trans,1),'scales',flip(round(pseudofreq,2),2),'xdata',t,'ydata',record(chan,:));
-xlabel('Time (ms)'); ylabel('Freq (Hz)');
+wscalogram(plottype,flip(real_trans,1),'scales',flip(round(pseudofreq,2),2),'xdata',t,'ydata',record);
+xlabel('Time (s)'); ylabel('Freq (Hz)');
 title('Pseudofrequency-time transform');
 
 end
