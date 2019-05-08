@@ -13,13 +13,17 @@ scales= helperCWTTimeFreqVector(freqSpan(1),freqSpan(2),centfrq(wavelet),1/fsamp
 pseudofreq= mean([freqSpan(1)*scales(end),freqSpan(2)*scales(1)])./scales;
 
 % Transform
-trans= cwtft({record,1/fsample},'wavelet',wavelet,'scales',scales,'padmode',padmode);
-real_trans= real(trans.cfs);
+trans = cwtft({record,1/fsample},'wavelet',wavelet,'scales',scales,'padmode',padmode);
+real_trans = abs(trans.cfs);
 
 % Plot
-figure
-wscalogram(plottype,flip(real_trans,1),'scales',flip(round(pseudofreq,2),2),'xdata',t,'ydata',record);
-xlabel('Time (s)'); ylabel('Freq (Hz)');
-title('Pseudofrequency-time transform');
+if plottype == false
+else
+    figure
+    wscalogram(plottype,flip(real_trans,1),'scales',flip(round(pseudofreq,2),2),'xdata',t,'ydata',record);
+    xlabel('Time (s)'); ylabel('Freq (Hz)');
+    title('Pseudofrequency-time transform');
+
+end
 
 end
