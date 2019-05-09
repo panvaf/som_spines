@@ -28,7 +28,7 @@ end
 batch = 1e6;  % batch size to break computation in parts
 win = .1; % in s, maximum expected size of postsynaptic event
 win_size = floor(win*samplefreq);
-threshold = 500; % for detection of events in general
+threshold = 1000; % for detection of events in general
 
 display = 0;   % 1 if want to display
 show = [];
@@ -56,11 +56,11 @@ else
     show = false;
 end
 
-% 'wavePlot',false...
 % Compute wavelet transform in batches
 
 wavs = [];
 times = [];
+amps = [];
 
 for i=1:ceil(size(volt,1)/batch)
     disp(i)
@@ -69,12 +69,22 @@ for i=1:ceil(size(volt,1)/batch)
     [wcf, pfreq, scales] = wavtrans(signal,t,samplefreq,rowsPerOct,waveFrq,padmode,wavelet,show);
     
     % extract events by the energy in a moving window
-    ind = movmean(sum(wcf),win_size);
-    event = diff(ind>threshold);
-    event(event<0) = 0; event = logical(event); index = find(event);
+    amp = movmean(sum(wcf),win_size);
+    event = diff(amp>threshold);
+    event(event<0) = 0; event = logical(event);
+    
+    % required space between events
+    for j=1:length(event)
+        if event(j)
+            event((j+1):(j+1+win_size/5)) = false;
+            j = j + win_size;
+        end
+    end
+    
+    index = find(event); amp = amp(event);
     
     % get absolute times of events
-    time = t(index) + Ch3.times(((i-1)*batch+1));
+    time = t(index); % + Ch3.times(((i-1)*batch+1));
     
     % extract wavelet transform around events
     wav = zeros(size(wcf,1),2*win_size,length(time));
@@ -86,18 +96,21 @@ for i=1:ceil(size(volt,1)/batch)
     end
     wavs = cat(3,wavs,wav);
     times = [times; time];
+    amps = [amps amp];
 end
 
 % remove events that are in times we are not interested in
 
-keep = true(length(times));
+keep = true(size(times));
 for i=1:size(seg,2)
     logical_temp = times < seg(i,1) | times > seg(i,2);
     keep = keep & logical_temp;
 end
 
 delete = not(keep);
-wav(:,:,delete) = [];
+wavs(:,:,delete) = [];
+times = times(keep);
+amps = amps(keep);
 
 toc
 
