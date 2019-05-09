@@ -70,18 +70,35 @@ for i=1:ceil(size(volt,1)/batch)
     
     % extract events by the energy in a moving window
     amp = movmean(sum(wcf),win_size);
-    event = diff(amp>threshold);
-    event(event<0) = 0; event = logical(event);
+    trans = diff(amp>threshold);
     
-    % required space between events
-    for j=1:length(event)
-        if event(j)
-            event((j+1):(j+1+win_size/5)) = false;
-            j = j + win_size;
-        end
+    % merge events that are too close
+    start = find(trans==1); fin = find(trans==-1);
+    
+    if size(start,2) > size(fin,2)
+        fin(size(start,2)) = size(trans,2);
+    elseif size(start,2) < size(fin,2)
+        start = [1 start];
     end
     
-    index = find(event); amp = amp(event);
+    for j=2:size(fin,2)
+        if start(j)-fin(j-1)<win_size/10
+            start(j) = 0;
+            fin(j-1) = 0;
+        end
+    end
+
+    start(start==0) = [];
+    fin(fin==0) = [];
+    
+    % center around peaks of events
+    event = false(1,size(trans,2));
+    for j=1:size(start,2)
+        [argvalue, argmax] = max(amp(start(j):fin(j)));
+        event(argmax+start(j)-1) = true;
+    end
+    
+    index = find(event); amp = amp(index);
     
     % get absolute times of events
     time = t(index); % + Ch3.times(((i-1)*batch+1));
