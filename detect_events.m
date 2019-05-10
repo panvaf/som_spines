@@ -1,4 +1,5 @@
-% receive and manipulate wavelet transform of physiological recordings
+% receive and manipulate wavelet transform of physiological recordings in
+% order to detect various types of events
 
 tic
 % load data
@@ -26,13 +27,15 @@ end
 % parameters
 
 batch = 1e6;  % batch size to break computation in parts
-win = .1; % in s, maximum expected size of postsynaptic event
+win = 5; % in s, maximum expected size of postsynaptic event
 win_size = floor(win*samplefreq);
-threshold = 1000; % for detection of events in general
+threshold = 300; % for detection of events in general
+isclose = win_size/10; % collate events that are close enough
+len = win_size/2;  % lenght of window of integration for detection
 
 display = 0;   % 1 if want to display
 show = [];
-waveFrq = [10,300];       % Transform frequency range (from Logothetis paper)
+waveFrq = [6,10];       % Transform frequency range
 rowsPerOct = 32;
 padmode = 'zpd';
 wavelet = 'mexh';          % Mother wavelet; must be either 'morl' | 'mexh'
@@ -69,7 +72,7 @@ for i=1:ceil(size(volt,1)/batch)
     [wcf, pfreq, scales] = wavtrans(signal,t,samplefreq,rowsPerOct,waveFrq,padmode,wavelet,show);
     
     % extract events by the energy in a moving window
-    amp = movmean(sum(wcf),win_size);
+    amp = movmean(sum(wcf),len);
     trans = diff(amp>threshold);
     
     % merge events that are too close
@@ -82,7 +85,7 @@ for i=1:ceil(size(volt,1)/batch)
     end
     
     for j=2:size(fin,2)
-        if start(j)-fin(j-1)<win_size/10
+        if start(j)-fin(j-1)<isclose
             start(j) = 0;
             fin(j-1) = 0;
         end
