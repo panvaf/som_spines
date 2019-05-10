@@ -11,8 +11,9 @@ load('theta_w5th300.mat')
 win = 5; % in s, maximum expected size of postsynaptic event
 win_size = floor(win*samplefreq);
 
-[amps, order] = sort(amps);
-wavs = wavs(:,:,order);
+% sort with descending order
+[amps, order] = sort(amps,'descend'); 
+wavs = wavs(:,:,order); times = times(order);
 
 % plots wavelet transform: click on current figure to get the next
 
