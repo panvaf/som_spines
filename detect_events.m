@@ -7,7 +7,6 @@ tic
 load('cellg110319.mat')
 volt = Ch3.values; % in mV
 t = Ch3.times;     % in s
-curr = Ch6.values; % in nA
 samplefreq = 1/Ch3.interval;  % in Hz
 
 % remove segments that are not wanted (stimulation etc)
