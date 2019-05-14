@@ -3,8 +3,8 @@
 
 % load data
 
-load('cellg110319.mat')
-load('cellg110319stim.mat')
+load('celle070319.mat')
+load('celle070319stim.mat')
 volt = Ch3.values; % in mV
 t = Ch3.times;     % in s
 curr = Ch6.values; % in nA
@@ -12,9 +12,9 @@ samplefreq = 1/Ch3.interval;  % in Hz
 
 % parameters
 
-stimulus = 'call';
-times = NonSibCall;
-display = 1;   % 1 if want to display
+stimulus = 'odor';
+times = NonMomOd;
+display = 0;   % 1 if want to display
 waveFrq = [6,10];       % Transform frequency range
 rowsPerOct = 32;
 padmode = 'zpd';
@@ -47,9 +47,9 @@ for i=1:size(times,1)
     signal = volt((index-bef_size):(index+stim_size+aft_size));
     t = (times(i) - bef):Ch3.interval:(times(i) + stim + aft);
     [wcf, pfreq, scales] = wavtrans(signal,t,samplefreq,rowsPerOct,waveFrq,padmode,wavelet,show);
-    amps(i,1) = sum(wcf(:,1:bef_size),'all');   % amplitude before stimulation
-    amps(i,2) = sum(wcf(:,(bef_size+1):(bef_size+stim_size)),'all');   % amplitude during stimulation
-    amps(i,3) = sum(wcf(:,(bef_size+stim_size+1):end),'all');   % amplitude after stimulation
+    amps(i,1) = sum(wcf(:,1:bef_size),'all')/bef;   % amplitude before stimulation
+    amps(i,2) = sum(wcf(:,(bef_size+1):(bef_size+stim_size)),'all')/stim;   % amplitude during stimulation
+    amps(i,3) = sum(wcf(:,(bef_size+stim_size+1):end),'all')/aft;   % amplitude after stimulation
     w = waitforbuttonpress;
 end
 
@@ -58,4 +58,9 @@ plot(amps)
 xlabel('Event #')
 ylabel('Intensity of theta rhythm')
 legend('Baseline','Stimulation','Rebound')
-title('Modulation of theta rhythm by stimulation (Non-Sibling Call)')
+title('Modulation of theta rhythm by stimulation (Non-Mother Odor)')
+
+
+norm_bef = kstest(amps(:,1))
+norm_stim = kstest(amps(:,2))
+norm_aft = kstest(amps(:,3))

@@ -27,15 +27,15 @@ end
 % parameters
 
 batch = 1e6;  % batch size to break computation in parts
-win = 5; % in s, maximum expected size of event
+win = .1; % in s, maximum expected size of event
 win_size = floor(win*samplefreq);
-threshold = 300; % for detection of events in general
+threshold = 150; % for detection of events in general
 isclose = win_size/10; % collate events that are close enough
 len = win_size/2;  % lenght of window of integration for detection
 
 display = 0;   % 1 if want to display
 show = [];
-waveFrq = [6,10];       % Transform frequency range
+waveFrq = [50,100];       % Transform frequency range
 rowsPerOct = 32;
 padmode = 'zpd';
 wavelet = 'mexh';          % Mother wavelet; must be either 'morl' | 'mexh'
