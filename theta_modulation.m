@@ -13,7 +13,7 @@ samplefreq = 1/Ch3.interval;  % in Hz
 % parameters
 
 stimulus = 'odor';
-times = NonMomOd;
+times = NonSibOd;
 display = 0;   % 1 if want to display
 waveFrq = [6,10];       % Transform frequency range
 rowsPerOct = 32;
@@ -60,7 +60,48 @@ ylabel('Intensity of theta rhythm')
 legend('Baseline','Stimulation','Rebound')
 title('Modulation of theta rhythm by stimulation (Non-Mother Odor)')
 
+% use one-sample Kolmogorov-Smirnov test to test if distributions are normal
 
-norm_bef = kstest(amps(:,1))
-norm_stim = kstest(amps(:,2))
-norm_aft = kstest(amps(:,3))
+norm_bef = ~kstest(amps(:,1));
+norm_stim = ~kstest(amps(:,2));
+norm_aft = ~kstest(amps(:,3));
+
+% use paired-sample t-test if distributions are normal
+
+if norm_bef && norm_stim
+    disp('Normally distributed:')
+    if ttest(amps(:,1),amps(:,2))
+        disp('Different mean for before and after stimulation')
+    else
+        disp('Same mean for before and after stimulation')
+    end
+end
+
+if norm_bef && norm_aft
+    disp('Normally distributed:')
+    if ttest(amps(:,1),amps(:,3))
+        disp('Different mean for before and after stimulation')
+    else
+        disp('Same mean for before and after stimulation')
+    end
+end
+
+% use Wilcoxon signed rank test if distributions are not normal
+
+[p1,h1] = signrank(amps(:,1),amps(:,2));
+
+if h1
+    disp('Different mean for before and during stimulation')
+else
+    disp('Same mean for before and during stimulation')
+end
+disp(p1)
+
+[p2,h2] = signrank(amps(:,1),amps(:,3));
+
+if h2
+    disp('Different mean for before and after stimulation')
+else
+    disp('Same mean for before and after stimulation')
+end
+disp(p2)

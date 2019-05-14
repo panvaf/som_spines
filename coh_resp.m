@@ -44,7 +44,7 @@ t_base = setdiff(t,t_rem);
 % convert times to indices
 od = round(t_od*samplefreq);
 call = round(t_call*samplefreq);
-base = round(t_base*samplefreq); base = base(2:end-1);
+base = round(t_base*samplefreq); base = base(2:end);
 
 % receive averaged coherences
 
