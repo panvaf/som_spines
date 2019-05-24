@@ -2,23 +2,24 @@
 
 % load data
 
-load('cellg110319.mat')
+load('cellf070319.mat')
 volt = Ch3.values; % in mV
 t = Ch3.times;     % in s
 curr = Ch6.values; % in nA
-samplefreq = 1/Ch3.interval;  % in Hz
-load('theta_w5th300.mat')
+sampleint = Ch3.interval;
+samplefreq = 1/sampleint;  % in Hz
+load('cellf070319_th_w5th500.mat')
 win = 5; % in s, maximum expected size of postsynaptic event
 win_size = floor(win*samplefreq);
 
 % sort with descending order
-[amps, order] = sort(amps,'descend'); 
+[amps, order] = sort(amps,'descend');
 wavs = wavs(:,:,order); times = times(order);
 
 % plots wavelet transform: click on current figure to get the next
 
 for i = 1:size(wavs,3)
-    t = (times(i) - 0.5*win):Ch3.interval:(times(i) + 1.5*win - Ch3.interval);
+    t = (times(i) - 0.5*win):sampleint:(times(i) + 1.5*win - sampleint);
     record = volt(((times(i) - 0.5*win)*samplefreq):((times(i) - 0.5*win)*samplefreq + 2*win_size - 1));
     figure
     wscalogram('image',flip(wavs(:,:,i),1),'scales',flip(round(pfreq,2),2),'xdata',t,'ydata',record);

@@ -3,17 +3,20 @@
 
 % load data
 
-load('celle070319.mat')
-load('celle070319stim.mat')
+cellname = 'cellf110319';
+recording = strcat(cellname,'.mat');
+load(recording)
+stimulation = strcat(cellname,'stim.mat');
+load(stimulation)
 volt = Ch3.values; % in mV
 t = Ch3.times;     % in s
-curr = Ch6.values; % in nA
-samplefreq = 1/Ch3.interval;  % in Hz
+sampleint = Ch3.interval;
+samplefreq = 1/sampleint;  % in Hz
 
 % parameters
 
-stimulus = 'odor';
-times = NonSibOd;
+stimulus = 'call';
+times = NonSibCall;
 display = 0;   % 1 if want to display
 waveFrq = [6,10];       % Transform frequency range
 rowsPerOct = 32;
@@ -45,7 +48,7 @@ amps = zeros(size(times,1),3);
 for i=1:size(times,1)
     index = times(i)*samplefreq;
     signal = volt((index-bef_size):(index+stim_size+aft_size));
-    t = (times(i) - bef):Ch3.interval:(times(i) + stim + aft);
+    t = (times(i) - bef):sampleint:(times(i) + stim + aft);
     [wcf, pfreq, scales] = wavtrans(signal,t,samplefreq,rowsPerOct,waveFrq,padmode,wavelet,show);
     amps(i,1) = sum(wcf(:,1:bef_size),'all')/bef;   % amplitude before stimulation
     amps(i,2) = sum(wcf(:,(bef_size+1):(bef_size+stim_size)),'all')/stim;   % amplitude during stimulation
@@ -58,7 +61,7 @@ plot(amps)
 xlabel('Event #')
 ylabel('Intensity of theta rhythm')
 legend('Baseline','Stimulation','Rebound')
-title('Modulation of theta rhythm by stimulation (Non-Mother Odor)')
+title('Modulation of theta rhythm by stimulation (Non-Sibling call)')
 
 % use one-sample Kolmogorov-Smirnov test to test if distributions are normal
 

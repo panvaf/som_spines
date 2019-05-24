@@ -4,16 +4,24 @@
 tic
 % load data
 
-load('cellg110319.mat')
+load('cellf110319.mat')
 volt = Ch3.values; % in mV
+curr = Ch6.values; % in nA
 t = Ch3.times;     % in s
-samplefreq = 1/Ch3.interval;  % in Hz
+sampleint = Ch3.interval;
+samplefreq = 1/sampleint;  % in Hz
 
 % remove segments that are not wanted (stimulation etc)
 % not needed since the wavelet algorithm is ultra fast
 % better remove events in the end
 
-seg = [1 100; 550 750;];  % segments to be removed, in seconds
+% segments to be removed, in seconds
+
+seg = [290 360; 450 520; 1280 1320;]; % for cellf110319
+%seg = [0 30; 1620 1730;];             % for cellf070319
+%seg = [1280 1380;];                   % for cellc020419
+%seg = [650 750;];                     % for celll230119
+%seg = [0 100; 550 750;];              % for cellg110319
 %{
 seg = seg*samplefreq;
 for i = 1:size(seg,2)
@@ -28,7 +36,7 @@ end
 batch = 1e6;  % batch size to break computation in parts
 win = .1; % in s, maximum expected size of event
 win_size = floor(win*samplefreq);
-threshold = 150; % for detection of events in general
+threshold = 800; % for detection of events in general
 isclose = win_size/10; % collate events that are close enough
 len = win_size/2;  % lenght of window of integration for detection
 
@@ -121,7 +129,7 @@ end
 % remove events that are in times we are not interested in
 
 keep = true(size(times));
-for i=1:size(seg,2)
+for i=1:size(seg,1)
     logical_temp = times < seg(i,1) | times > seg(i,2);
     keep = keep & logical_temp;
 end

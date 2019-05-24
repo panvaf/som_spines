@@ -20,7 +20,7 @@ abs_trans = abs(trans.cfs);
 if plottype == false
 else
     figure
-    wscalogram(plottype,flip(abs_trans,1),'scales',flip(round(pseudofreq,2),2),'xdata',t,'ydata',record);
+    wscalogram(plottype,flip(abs_trans,1),'scales',flip(round(pseudofreq),2),'xdata',t,'ydata',record);
     xlabel('Time (s)'); ylabel('Freq (Hz)');
     title('Pseudofrequency-time transform');
 
