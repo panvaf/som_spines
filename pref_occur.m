@@ -3,7 +3,7 @@
 
 % load files
 
-cellname = 'cella270319';
+cellname = 'cella260319';
 recording = strcat(cellname,'.mat');
 load(recording)
 stimulation = strcat(cellname,'stim.mat');
@@ -17,6 +17,10 @@ odor = 5; % in s
 call = 1; % in s
 Odor = cat(1,LemOd,MomOd,NonMomOd,NonSibOd,SibOd);
 Call = cat(1,MomCall,NonMomCall,NonSibCall,SibCall);
+
+% subtract time of segments that were not analyzed
+t_seg = sum(diff(seg,1,2));
+dur = dur - t_seg;
 
 % total duration of presentations
 odor_dur = odor*size(Odor,1);
