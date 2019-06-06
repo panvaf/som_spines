@@ -3,7 +3,7 @@
 
 % load data
 
-cellname = 'cellf110319';
+cellname = 'cella270319';
 recording = strcat(cellname,'.mat');
 load(recording)
 stimulation = strcat(cellname,'stim.mat');
@@ -44,6 +44,7 @@ else
 end
 
 amps = zeros(size(times,1),3);
+P_stim = 0; P_base = 0;
 
 for i=1:size(times,1)
     index = times(i)*samplefreq;
@@ -53,8 +54,32 @@ for i=1:size(times,1)
     amps(i,1) = sum(wcf(:,1:bef_size),'all')/bef;   % amplitude before stimulation
     amps(i,2) = sum(wcf(:,(bef_size+1):(bef_size+stim_size)),'all')/stim;   % amplitude during stimulation
     amps(i,3) = sum(wcf(:,(bef_size+stim_size+1):end),'all')/aft;   % amplitude after stimulation
+    
+    % plot modulation in fourier transform
+    
+    base = signal(1:bef_size);
+    stm = signal((bef_size+1):(bef_size+stim_size));
+    
+    ft_temp_stim = fft(stm);
+    L_stim = size(stm,1);
+    P2 = abs(ft_temp_stim/L_stim);
+    P1_temp = P2(1:L_stim/2+1);
+    P1_temp(2:end-1) = 2*P1_temp(2:end-1);
+    P_stim = P_stim + P1_temp;
+    
+    ft_temp_base = fft(base);
+    L_base = size(base,1);
+    P2 = abs(ft_temp_base/L_base);
+    P1_temp = P2(1:L_base/2+1);
+    P1_temp(2:end-1) = 2*P1_temp(2:end-1);
+    P_base = P_base + P1_temp;
+    
     w = waitforbuttonpress;
 end
+
+f = samplefreq*(0:(L_stim/2))/L_stim;
+f_base = samplefreq*(0:(L_base/2))/L_base;
+P_stim = P_stim/size(times,1); P_base = P_base/size(times,1);
 
 figure
 plot(amps)
@@ -108,3 +133,20 @@ else
     disp('Same mean for before and after stimulation')
 end
 disp(p2)
+
+
+% see difference in fourier transform
+
+tsin = timeseries(P_base,f_base);
+tsout = resample(tsin,f);
+P_base = tsout.Data;
+
+figure
+semilogy(f,P_base)
+hold on
+semilogy(f,P_stim)
+xlim([1 50])
+xlabel('Frequency (Hz)')
+ylabel('Power')
+legend('Baseline','Stimulation')
+title('Fourier transform (Sibling call)')

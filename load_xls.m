@@ -1,7 +1,7 @@
 % load data from excel file of events during single cell recordings
 
 filename = 'SiblingTimes.xls';
-cellname = 'cellf070319';
+cellname = 'cella270319';
 directory = '';
 filepath = strcat(directory,'/',filename);
 savefile = strcat(cellname,'stim.mat');

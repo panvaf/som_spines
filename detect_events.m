@@ -4,7 +4,7 @@
 tic
 % load data
 
-load('cellf110319.mat')
+load('cella270319.mat')
 volt = Ch3.values; % in mV
 curr = Ch6.values; % in nA
 t = Ch3.times;     % in s
@@ -17,7 +17,18 @@ samplefreq = 1/sampleint;  % in Hz
 
 % segments to be removed, in seconds
 
-seg = [290 360; 450 520; 1280 1320;]; % for cellf110319
+seg = [1040 1090; 1589 1610;];          % for cella270319
+%seg = [110 150; 1630 1660;];          % for cella260319
+%seg = [368 490;];                     % for cellb250319
+%seg = [];                             % for cella250319
+%seg = [0 60; 105 140; 180 210;];      % for cellb220319
+%seg = [10 90; 160 190;];              % for cella220319
+%seg = [0 100;];                       % for cellb080319
+%seg = [];                             % for cellg040219
+%seg = [30 45;];                       % for cellb110319
+%seg = [0 40; 390 450; 1030 1180;];    % for cellb070319
+%seg = [0 50; 1600 1750;];             % for celle070319
+%seg = [290 360; 450 520; 1280 1320;]; % for cellf110319
 %seg = [0 30; 1620 1730;];             % for cellf070319
 %seg = [1280 1380;];                   % for cellc020419
 %seg = [650 750;];                     % for celll230119
@@ -36,7 +47,8 @@ end
 batch = 1e6;  % batch size to break computation in parts
 win = .1; % in s, maximum expected size of event
 win_size = floor(win*samplefreq);
-threshold = 800; % for detection of events in general
+threshold = 300; % for detection of events in general
+threshold_sp = 400; % events above this threshold are classified as spikes
 isclose = win_size/10; % collate events that are close enough
 len = win_size/2;  % lenght of window of integration for detection
 
@@ -134,6 +146,7 @@ for i=1:size(seg,1)
     keep = keep & logical_temp;
 end
 
+keep = keep & (amps < threshold_sp)';
 delete = not(keep);
 wavs(:,:,delete) = [];
 times = times(keep);

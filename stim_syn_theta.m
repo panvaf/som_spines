@@ -3,12 +3,12 @@
 
 % load data
 
-cellname = 'cellc020419';
+cellname = 'cella270319';
 stimulation = strcat(cellname,'stim.mat');
 load(stimulation)
-load('cellc020419_theta_w5th150.mat')
+load('cella270319_theta_w5th1400.mat')
 t_th = times;
-load('cellc020419_syn_w100th400r50-100.mat')
+load('cella270319_syn_w100th300-400r50-100.mat')
 t_syn = times;
 
 % parameters

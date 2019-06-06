@@ -2,13 +2,13 @@
 
 % load data
 
-load('cellf070319.mat')
+load('cellb080319.mat')
 volt = Ch3.values; % in mV
 t = Ch3.times;     % in s
 curr = Ch6.values; % in nA
 sampleint = Ch3.interval;
 samplefreq = 1/sampleint;  % in Hz
-load('cellf070319_th_w5th500.mat')
+load('cellb080319_theta_w5th50.mat')
 win = 5; % in s, maximum expected size of postsynaptic event
 win_size = floor(win*samplefreq);
 

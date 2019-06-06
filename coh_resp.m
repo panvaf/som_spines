@@ -4,7 +4,7 @@ tic
 
 % load data
 
-cellname = 'cellf110319';
+cellname = 'cella270319';
 recording = strcat(cellname,'.mat');
 load(recording)
 stimulation = strcat(cellname,'stim.mat');
